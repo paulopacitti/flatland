@@ -1,14 +1,18 @@
 #include "Game.hpp"
-#include "SDL2/SDL_error.h"
 #include "SDL2/SDL_events.h"
-#include "SDL2/SDL_keycode.h"
 #include "SDL2/SDL_render.h"
-#include "SDL2/SDL_video.h"
+#include "SDL2/SDL_timer.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <glm/glm.hpp>
 #include <iostream>
+
+glm::vec2 playerPosition;
+glm::vec2 playerVelocity;
 
 Game::Game() {
   m_isRunning = false;
+  m_previousFrameTime = 0;
   std::cout << "Game constructor called!" << std::endl;
 }
 
@@ -40,7 +44,13 @@ void Game::initialize() {
   m_isRunning = true;
 }
 
+void Game::setup() {
+  playerPosition = glm::vec2(10.0, 10.0);
+  playerVelocity = glm::vec2(100.0, 0.0);
+}
+
 void Game::run() {
+  setup();
   while (m_isRunning) {
     processInput();
     update();
@@ -64,16 +74,48 @@ void Game::processInput() {
   }
 }
 
+double Game::getDeltaTime() {
+  // frame cap
+  uint64_t waitMs = MS_PER_FRAME - (SDL_GetTicks64() - m_previousFrameTime);
+  if (waitMs > 0 && waitMs <= MS_PER_FRAME) {
+    // sleep until next frame
+    SDL_Delay(static_cast<uint32_t>(waitMs));
+  }
+
+  // delta time (in seconds)
+  double dt = (SDL_GetTicks64() - m_previousFrameTime) / 1000.0;
+  // store the current frame time
+  m_previousFrameTime = SDL_GetTicks64();
+
+  return dt;
+}
+
 void Game::update() {
-  // TODO: update game objects
+  double dt = getDeltaTime();
+
+  playerPosition.x += playerVelocity.x * dt;
+  playerPosition.y += playerVelocity.y * dt;
 }
 
 void Game::render() {
-  SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+  // draw background
+  SDL_SetRenderDrawColor(m_renderer, 21, 21, 21, 255);
   SDL_RenderClear(m_renderer);
 
-  // TODO: render all game objects
+  // create texture
+  SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
+  SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+  SDL_FreeSurface(surface);
 
+  // texture placement
+  SDL_Rect destinationRect = {static_cast<int>(playerPosition.x),
+                              static_cast<int>(playerPosition.y), 32, 32};
+  // copy texture to buffer
+  SDL_RenderCopy(m_renderer, texture, NULL, &destinationRect);
+  // destroy texture after copy
+  SDL_DestroyTexture(texture);
+
+  // render buffer
   SDL_RenderPresent(m_renderer);
 }
 
