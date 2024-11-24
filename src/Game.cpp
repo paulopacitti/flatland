@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "Logger.hpp"
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_render.h"
 #include "SDL2/SDL_timer.h"
@@ -14,9 +15,13 @@ Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
   std::cout << "Game constructor called!" << std::endl;
+  Logger::info("Hello");
 }
 
-Game::~Game() { std::cout << "Game destructor called!" << std::endl; }
+Game::~Game() {
+  std::cout << "Game destructor called!" << std::endl;
+  Logger::error("broken!");
+}
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -49,6 +54,13 @@ void Game::setup() {
   playerVelocity = glm::vec2(100.0, 0.0);
 }
 
+/**
+ * Runs the main game loop.
+ *
+ * This function sets up the game and enters the main game loop, which continues
+ * to run while the game is in a running state. Within the loop, it processes
+ * input, updates the game state, and renders the game.
+ */
 void Game::run() {
   setup();
   while (m_isRunning) {
@@ -58,6 +70,13 @@ void Game::run() {
   }
 }
 
+/**
+ * Processes input events for the game.
+ *
+ * This function polls for SDL events and handles them accordingly. It checks
+ * for quit events and keydown events. If the quit event is detected or the
+ * escape key is pressed, the game will stop running.
+ */
 void Game::processInput() {
   SDL_Event sdlEvent;
 
@@ -74,6 +93,16 @@ void Game::processInput() {
   }
 }
 
+/**
+ * Calculates the time elapsed since the last frame and enforces a
+ * frame cap.
+ *
+ * This function calculates the delta time (in seconds) since the last frame,
+ * enforces a frame cap by delaying the execution if necessary, and updates
+ * the previous frame time.
+ *
+ * Returns the delta time (in seconds) since the last frame.
+ */
 double Game::getDeltaTime() {
   // frame cap
   uint64_t waitMs = MS_PER_FRAME - (SDL_GetTicks64() - m_previousFrameTime);
