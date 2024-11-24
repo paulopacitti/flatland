@@ -1,8 +1,8 @@
 #include "Game.hpp"
-#include "Logger.hpp"
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_render.h"
 #include "SDL2/SDL_timer.h"
+#include "spdlog/spdlog.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -15,13 +15,10 @@ Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
   std::cout << "Game constructor called!" << std::endl;
-  Logger::info("Hello");
+  spdlog::info("Welcome to spdlog!");
 }
 
-Game::~Game() {
-  std::cout << "Game destructor called!" << std::endl;
-  Logger::error("broken!");
-}
+Game::~Game() { std::cout << "Game destructor called!" << std::endl; }
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {

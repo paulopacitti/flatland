@@ -1,7 +1,7 @@
 CC=clang++
 INCLUDE_FLAGS=-I"./libs"
 LINKER_FLAGS=-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -llua
-COMPILER_FLAGS=-Wall -std=c++17
+COMPILER_FLAGS=-Wall -Wfatal-errors -std=c++17
 DEBUG_FLAGS=-g
 
 all: clean build run

@@ -1,6 +1,6 @@
 /*
  * toy logger implementation using std::cout. Not fast enough ot be used in the
- * engine
+ * engine. Use spdlog instead.
  */
 
 #ifndef LOGGER_HPP
