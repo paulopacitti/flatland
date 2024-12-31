@@ -20,3 +20,6 @@ clean:
 run:
 	@./build/flatland
 
+vector:
+	@mkdir -p build
+	$(CC) $(COMPILER_FLAGS) src/Vector/*.cpp -o build/vector
