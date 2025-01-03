@@ -36,7 +36,13 @@ public:
   }
   ~Vector() { delete[] m_elements; }
 
+  /**
+   * Returns the size of the vector.
+   */
   size_t getSize() const { return m_size; }
+  /**
+   * Returns the capacity of the vector.
+   */
   size_t getCapacity() const { return m_capacity; }
 
   /**
@@ -108,7 +114,7 @@ public:
    * `std::out_of_range` exception is thrown.
    */
   void erase(size_t index) {
-    if (index > m_size || index < 0) {
+    if (index > m_size) {
       throw std::out_of_range("Insert index out of bounds");
     }
     for (size_t i = index; i < m_size - 1; i++) {
@@ -122,8 +128,20 @@ public:
    */
   void clear() { m_size = 0; }
 
-  T &operator[](size_t index) { return m_elements[index]; }
-  const T &operator[](size_t index) const { return m_elements[index]; }
+  T &operator[](size_t index) {
+    if (index >= m_size) {
+      throw std::out_of_range("Index out of bounds");
+    }
+    return m_elements[index];
+  }
+
+  const T &operator[](size_t index) const {
+    if (index >= m_size) {
+      throw std::out_of_range("Index out of bounds");
+    }
+    return m_elements[index];
+  }
+
   Vector &operator=(const Vector &v) {
     delete[] m_elements;
     m_capacity = v.getCapacity();

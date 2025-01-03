@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "ECS.hpp"
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_render.h"
 #include "SDL2/SDL_timer.h"
@@ -8,17 +9,13 @@
 #include <glm/glm.hpp>
 #include <iostream>
 
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
-
 Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
-  std::cout << "Game constructor called!" << std::endl;
-  spdlog::info("Welcome to spdlog!");
+  spdlog::info("Game constructor called");
 }
 
-Game::~Game() { std::cout << "Game destructor called!" << std::endl; }
+Game::~Game() { spdlog::info("Game destructor called"); }
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -47,8 +44,11 @@ void Game::initialize() {
 }
 
 void Game::setup() {
-  playerPosition = glm::vec2(10.0, 10.0);
-  playerVelocity = glm::vec2(100.0, 0.0);
+  // TODO:
+  // Entity tank = regitry.createEntity();
+  // tank.addComponent<TransformCompoenent>();
+  // tank.addComponent<BoxColliderComponent>();
+  // tank.addComponent<SpriteComponent>("./assets/images/tank.png");
 }
 
 /**
@@ -119,8 +119,10 @@ double Game::getDeltaTime() {
 void Game::update() {
   double dt = getDeltaTime();
 
-  playerPosition.x += playerVelocity.x * dt;
-  playerPosition.y += playerVelocity.y * dt;
+  // TODO:
+  // MovementSystem.update();
+  // CollitionSystem.update();
+  // UpdateSystem.update();
 }
 
 void Game::render() {
@@ -128,18 +130,7 @@ void Game::render() {
   SDL_SetRenderDrawColor(m_renderer, 21, 21, 21, 255);
   SDL_RenderClear(m_renderer);
 
-  // create texture
-  SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-  SDL_FreeSurface(surface);
-
-  // texture placement
-  SDL_Rect destinationRect = {static_cast<int>(playerPosition.x),
-                              static_cast<int>(playerPosition.y), 32, 32};
-  // copy texture to buffer
-  SDL_RenderCopy(m_renderer, texture, NULL, &destinationRect);
-  // destroy texture after copy
-  SDL_DestroyTexture(texture);
+  // TODO: Render game objects.
 
   // render buffer
   SDL_RenderPresent(m_renderer);
