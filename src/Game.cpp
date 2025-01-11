@@ -12,11 +12,11 @@
 Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
-  m_registry = new Registry();
-  spdlog::info("Game constructor called.");
+  m_registry = std::make_unique<Registry>();
+  spdlog::info("[Game] created.");
 }
 
-Game::~Game() { spdlog::info("Game destructor called."); }
+Game::~Game() { spdlog::info("[Game] destroyed."); }
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -49,13 +49,6 @@ void Game::setup() {
   Entity truck = m_registry->createEntity();
 }
 
-/**
- * Runs the main game loop.
- *
- * This function sets up the game and enters the main game loop, which continues
- * to run while the game is in a running state. Within the loop, it processes
- * input, updates the game state, and renders the game.
- */
 void Game::run() {
   setup();
   while (m_isRunning) {
@@ -65,13 +58,6 @@ void Game::run() {
   }
 }
 
-/**
- * Processes input events for the game.
- *
- * This function polls for SDL events and handles them accordingly. It checks
- * for quit events and keydown events. If the quit event is detected or the
- * escape key is pressed, the game will stop running.
- */
 void Game::processInput() {
   SDL_Event sdlEvent;
 
@@ -88,16 +74,6 @@ void Game::processInput() {
   }
 }
 
-/**
- * Calculates the time elapsed since the last frame and enforces a
- * frame cap.
- *
- * This function calculates the delta time (in seconds) since the last frame,
- * enforces a frame cap by delaying the execution if necessary, and updates
- * the previous frame time.
- *
- * Returns the delta time (in seconds) since the last frame.
- */
 double Game::getDeltaTime() {
   // frame cap
   uint64_t waitMs = MS_PER_FRAME - (SDL_GetTicks64() - m_previousFrameTime);
@@ -135,7 +111,6 @@ void Game::render() {
 }
 
 void Game::destroy() {
-  delete m_registry;
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   SDL_Quit();
