@@ -15,9 +15,11 @@ All other libs are statically linked and present along with other header files i
 
 - **Entity**: represents a general-purpose object. Every game object is represented as an entity. Usually, it only consists of a unique id, typically use a plain integer for this.
 - **Component**: an entity as possessing a particular aspect, and holds the data needed to model that aspect. For example, every game object that can take damage might have a Health component associated with its entity. Implementations typically use structs, classes, or associative arrays.
+  - **Signature**: `std::bitset` to represent which components an entity has or which entities a system is insterested in.
 - **System**: a process which acts on all entities with the desired components. For example, a physics system may query for entities having mass, velocity and position components, and iterate over the results doing physics calculations on the set of components for each entity. 
 - **Registry**: holds all the entities, components and entities of the game engine. As singleton, one instance per execution. Holds the API to add entities, components and systems to the running game.
   - **Component Pools**: data structure that holds component pools, where the component ID is the index, and a pool of components (another vector) hold the entites that hold this component.
+
 
 
 ## Contribution Guidelides

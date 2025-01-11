@@ -38,13 +38,34 @@ Entity Registry::createEntity() {
 
   Entity entity(entityId);
   m_entitiesToBeAdded.insert(entity);
+  if (entityId >= m_entityComponentSignatures.size()) {
+    m_entityComponentSignatures.resize(entityId + 1);
+  }
 
-  spdlog::debug("[Registry] Entity created with id = {}.", entityId);
+  spdlog::info("[Registry] Entity created with id = {}.", entityId);
   return entity;
 }
 
+void Registry::addEntityToSystems(Entity entity) {
+  const uint16_t entityId = entity.getId();
+  const auto entityComponentSignature = m_entityComponentSignatures[entityId];
+
+  for (auto &system : m_systems) {
+    const auto &systemComponentSignature = system.second->getSignature();
+
+    if ((entityComponentSignature & systemComponentSignature) ==
+        systemComponentSignature) {
+      system.second->addEntity(entity);
+    }
+  }
+}
+
 void Registry::update() {
-  // TODO: add the entities in `m_entitiesToBeAdded` to the active systems.
+  for (auto entity : m_entitiesToBeAdded) {
+    addEntityToSystems(entity);
+  }
+  m_entitiesToBeAdded.clear();
+
   // TODO: remove the entities in `m_entitiesToBeRemoved` from the active
   // systems.
 }

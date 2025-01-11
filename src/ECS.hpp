@@ -32,6 +32,9 @@ public:
 
   // Retrieves the unique identifier of the entity.
   uint16_t getId() const;
+
+  // Required to be placed in a set
+  bool operator<(const Entity &e) const { return m_id < e.getId(); }
 };
 
 // ----------- Component ----------------
@@ -196,6 +199,17 @@ public:
   void addComponent(Entity entity, TArgs &&...args);
   template <typename TComponent> void removeComponent(Entity entity);
   template <typename TComponent> bool hasComponent(Entity entity);
+
+  template <typename TSystem, typename... TArgs>
+  void addSystem(TArgs &&...args);
+  template <typename TSystem> void removeSystem();
+  template <typename TSystem> bool hasSystem() const;
+  template <typename TSystem> TSystem &getSystem() const;
+
+  /** Checks the component signature of an entity and add the entity to the
+   * systems that are interested in it.
+   */
+  void addEntityToSystems(Entity entity);
 };
 
 template <typename TComponent, typename... TArgs>
@@ -225,7 +239,7 @@ void Registry::addComponent(Entity entity, TArgs &&...args) {
 
   // create new component object of the type T, and forward the various
   // parameters to the constructor
-  TComponent newComponent(std::forward<TArgs>(args)...);
+  TComponent *newComponent(std::forward<TArgs>(args)...);
 
   // add the new component to the component pool list, using the entityId as
   // index
@@ -249,4 +263,23 @@ template <typename TComponent> bool Registry::hasComponent(Entity entity) {
   return m_entityComponentSignatures[entityId].test(componentId);
 }
 
+template <typename TSystem, typename... TArgs>
+void Registry::addSystem(TArgs &&...args) {
+  TSystem *newSystem(new TSystem(std::forward<TArgs>(args)...));
+  m_systems.insert(std::make_pair(std::type_index(typeid(TSystem)), newSystem));
+}
+
+template <typename TSystem> void Registry::removeSystem() {
+  auto system = m_systems.find(std::type_index(typeid(TSystem)));
+  m_systems.erase(system);
+}
+
+template <typename TSystem> bool Registry::hasSystem() const {
+  return m_systems.find(std::type_index(typeid(TSystem))) != m_systems.end();
+}
+
+template <typename TSystem> TSystem &Registry::getSystem() const {
+  auto system = m_systems.find(std::type_index(typeid(TSystem)));
+  return *(std::static_pointer_cast<TSystem>(system->second));
+}
 #endif

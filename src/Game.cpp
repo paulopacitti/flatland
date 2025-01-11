@@ -12,10 +12,11 @@
 Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
-  spdlog::info("Game constructor called");
+  m_registry = new Registry();
+  spdlog::info("Game constructor called.");
 }
 
-Game::~Game() { spdlog::info("Game destructor called"); }
+Game::~Game() { spdlog::info("Game destructor called."); }
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -23,11 +24,11 @@ void Game::initialize() {
     return;
   }
 
-  m_windowWidth = 800;
-  m_windowHeight = 600;
+  windowWidth = 800;
+  windowHeight = 600;
   m_window = SDL_CreateWindow("flatland", SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED, m_windowWidth,
-                              m_windowHeight, SDL_WINDOW_RESIZABLE);
+                              SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight,
+                              SDL_WINDOW_RESIZABLE);
   if (!m_window) {
     std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
     return;
@@ -44,11 +45,8 @@ void Game::initialize() {
 }
 
 void Game::setup() {
-  // TODO:
-  // Entity tank = regitry.createEntity();
-  // tank.addComponent<TransformCompoenent>();
-  // tank.addComponent<BoxColliderComponent>();
-  // tank.addComponent<SpriteComponent>("./assets/images/tank.png");
+  Entity tank = m_registry->createEntity();
+  Entity truck = m_registry->createEntity();
 }
 
 /**
@@ -137,6 +135,7 @@ void Game::render() {
 }
 
 void Game::destroy() {
+  delete m_registry;
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   SDL_Quit();

@@ -1,6 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include "ECS.hpp"
 #include <SDL2/SDL.h>
 #include <cstdint>
 
@@ -17,9 +18,11 @@ private:
   void setup();
   double getDeltaTime();
 
+  Registry *m_registry;
+
 public:
-  uint16_t m_windowWidth;
-  uint16_t m_windowHeight;
+  uint16_t windowWidth;
+  uint16_t windowHeight;
 
   Game();
   ~Game();
