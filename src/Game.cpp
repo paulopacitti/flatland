@@ -1,13 +1,14 @@
 #include "Game.hpp"
+#include "Component.hpp"
 #include "ECS.hpp"
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL_render.h"
 #include "SDL2/SDL_timer.h"
+#include "glm/ext/vector_float2.hpp"
 #include "spdlog/spdlog.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
-#include <iostream>
 
 Game::Game() {
   m_isRunning = false;
@@ -20,7 +21,7 @@ Game::~Game() { spdlog::info("[Game] destroyed."); }
 
 void Game::initialize() {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+    spdlog::error("Error initializing SDL: {}", SDL_GetError());
     return;
   }
 
@@ -30,14 +31,14 @@ void Game::initialize() {
                               SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight,
                               SDL_WINDOW_RESIZABLE);
   if (!m_window) {
-    std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
+    spdlog::error("Error creating SDL window: {}", SDL_GetError());
     return;
   }
 
   m_renderer = SDL_CreateRenderer(
       m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (!m_renderer) {
-    std::cerr << "Error creating SDL renderer: " << SDL_GetError() << std::endl;
+    spdlog::error("Error creating SDL renderer: {}", SDL_GetError());
     return;
   }
 
@@ -46,7 +47,11 @@ void Game::initialize() {
 
 void Game::setup() {
   Entity tank = m_registry->createEntity();
-  Entity truck = m_registry->createEntity();
+
+  tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
+                                        glm::vec2(1.0, 1.0), 0.0);
+  tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+  tank.removeComponent<TransformComponent>();
 }
 
 void Game::run() {

@@ -2,9 +2,9 @@
 #define MOVEMENTSYSTEM_H
 
 class MovementSystem : public System {
-public:
-  MovementSystem();
-  void Update();
+  public:
+    MovementSystem();
+    void Update();
 };
 
 #endif

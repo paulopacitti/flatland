@@ -27,9 +27,9 @@ void System::removeEntity(Entity entity) {
   }
 }
 
-const std::vector<Entity> &System::getEntities() const { return m_entities; }
+const std::vector<Entity>& System::getEntities() const { return m_entities; }
 
-const Signature &System::getSignature() const { return m_signature; }
+const Signature& System::getSignature() const { return m_signature; }
 
 // --------- Registry implementation -----------
 
@@ -37,6 +37,7 @@ Entity Registry::createEntity() {
   uint16_t entityId = m_numEntities++;
 
   Entity entity(entityId);
+  entity.registry = this;
   m_entitiesToBeAdded.insert(entity);
   if (entityId >= m_entityComponentSignatures.size()) {
     m_entityComponentSignatures.resize(entityId + 1);
@@ -50,8 +51,8 @@ void Registry::addEntityToSystems(Entity entity) {
   const uint16_t entityId = entity.getId();
   const auto entityComponentSignature = m_entityComponentSignatures[entityId];
 
-  for (auto &system : m_systems) {
-    const auto &systemComponentSignature = system.second->getSignature();
+  for (auto& system : m_systems) {
+    const auto& systemComponentSignature = system.second->getSignature();
 
     if ((entityComponentSignature & systemComponentSignature) ==
         systemComponentSignature) {

@@ -1,0 +1,5 @@
+BasedOnStyle: LLVM
+IndentWidth: 2
+AccessModifierOffset: 0
+IndentAccessModifiers: true
+PointerAlignment: Left
