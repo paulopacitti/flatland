@@ -218,6 +218,8 @@ class Registry {
     void addEntityToSystems(Entity entity);
 };
 
+// ----------------------- Template functions implementation -----------
+
 template <typename TComponent, typename... TArgs>
 void Entity::addComponent(TArgs&&... args) {
   this->registry->addComponent<TComponent>(*this, std::forward<TArgs>(args)...);

@@ -6,6 +6,7 @@
 #include "SDL2/SDL_timer.h"
 #include "glm/ext/vector_float2.hpp"
 #include "spdlog/spdlog.h"
+#include "systems/MovementSystem.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -46,12 +47,12 @@ void Game::initialize() {
 }
 
 void Game::setup() {
+  m_registry->addSystem<MovementSystem>();
   Entity tank = m_registry->createEntity();
 
   tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
                                         glm::vec2(1.0, 1.0), 0.0);
-  tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
-  tank.removeComponent<TransformComponent>();
+  tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
 }
 
 void Game::run() {
@@ -98,10 +99,8 @@ double Game::getDeltaTime() {
 void Game::update() {
   double dt = getDeltaTime();
 
-  // TODO:
-  // MovementSystem.update();
-  // CollitionSystem.update();
-  // UpdateSystem.update();
+  m_registry->getSystem<MovementSystem>().update(dt);
+  m_registry->update();
 }
 
 void Game::render() {
