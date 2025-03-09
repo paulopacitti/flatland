@@ -7,6 +7,7 @@
 #include "glm/ext/vector_float2.hpp"
 #include "spdlog/spdlog.h"
 #include "systems/MovementSystem.hpp"
+#include "systems/RenderSystem.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
@@ -48,11 +49,19 @@ void Game::initialize() {
 
 void Game::setup() {
   m_registry->addSystem<MovementSystem>();
+  m_registry->addSystem<RenderSystem>();
   Entity tank = m_registry->createEntity();
 
   tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
                                         glm::vec2(1.0, 1.0), 0.0);
   tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
+  tank.addComponent<SpriteComponent>(100, 100);
+
+  Entity truck = m_registry->createEntity();
+  truck.addComponent<TransformComponent>(glm::vec2(50.0, 100.0),
+                                         glm::vec2(1.0, 1.0), 0.0);
+  truck.addComponent<RigidBodyComponent>(glm::vec2(0.0, 50.0));
+  truck.addComponent<SpriteComponent>(100, 10);
 }
 
 void Game::run() {
@@ -98,9 +107,9 @@ double Game::getDeltaTime() {
 
 void Game::update() {
   double dt = getDeltaTime();
+  m_registry->update();
 
   m_registry->getSystem<MovementSystem>().update(dt);
-  m_registry->update();
 }
 
 void Game::render() {
@@ -108,8 +117,8 @@ void Game::render() {
   SDL_SetRenderDrawColor(m_renderer, 21, 21, 21, 255);
   SDL_RenderClear(m_renderer);
 
-  // TODO: Render game objects.
-
+  // draw backgrounds
+  m_registry->getSystem<RenderSystem>().update(m_renderer);
   // render buffer
   SDL_RenderPresent(m_renderer);
 }
