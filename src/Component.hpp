@@ -1,6 +1,7 @@
 #ifndef COMPONENTS_HPP
 #define COMPONENTS_HPP
 #include <glm/glm.hpp>
+#include <string>
 
 struct TransformComponent {
     glm::vec2 position;
@@ -25,10 +26,12 @@ struct RigidBodyComponent {
 };
 
 struct SpriteComponent {
+    std::string assetId;
     int width;
     int height;
 
-    SpriteComponent(int width = 0, int height = 0) {
+    SpriteComponent(std::string assetId = "", int width = 0, int height = 0) {
+      this->assetId = assetId;
       this->width = width;
       this->height = height;
     }

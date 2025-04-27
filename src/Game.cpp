@@ -11,11 +11,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <memory>
 
 Game::Game() {
   m_isRunning = false;
   m_previousFrameTime = 0;
   m_registry = std::make_unique<Registry>();
+  m_assetStore = std::make_unique<AssetStore>();
   spdlog::info("[Game] created.");
 }
 
@@ -50,18 +52,24 @@ void Game::initialize() {
 void Game::setup() {
   m_registry->addSystem<MovementSystem>();
   m_registry->addSystem<RenderSystem>();
-  Entity tank = m_registry->createEntity();
 
+  // adding assets to the AssetStore
+  m_assetStore->addTexture(m_renderer, "tank-image",
+                           "../assets/images/tank-panther-right.png");
+  m_assetStore->addTexture(m_renderer, "truck-image",
+                           "../assets/truck-ford-right.png");
+
+  Entity tank = m_registry->createEntity();
   tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
                                         glm::vec2(1.0, 1.0), 0.0);
   tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
-  tank.addComponent<SpriteComponent>(100, 100);
+  tank.addComponent<SpriteComponent>("tank-image", 100, 100);
 
   Entity truck = m_registry->createEntity();
   truck.addComponent<TransformComponent>(glm::vec2(50.0, 100.0),
                                          glm::vec2(1.0, 1.0), 0.0);
   truck.addComponent<RigidBodyComponent>(glm::vec2(0.0, 50.0));
-  truck.addComponent<SpriteComponent>(100, 10);
+  truck.addComponent<SpriteComponent>("truck-image", 100, 10);
 }
 
 void Game::run() {

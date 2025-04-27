@@ -17,6 +17,7 @@ class RenderSystem : public System {
         const auto transform = entity.getComponent<TransformComponent>();
         const auto sprite = entity.getComponent<SpriteComponent>();
 
+        // TODO: draw the textures of each sprite
         SDL_Rect obj = {static_cast<int>(transform.position.x),
                         static_cast<int>(transform.position.y), sprite.width,
                         sprite.height};

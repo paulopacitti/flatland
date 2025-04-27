@@ -1,9 +1,11 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include "AssetStore.hpp"
 #include "ECS.hpp"
 #include <SDL2/SDL.h>
 #include <cstdint>
+#include <memory>
 
 const int FPS = 60;
 const int MS_PER_FRAME = 1000 / FPS;
@@ -13,6 +15,7 @@ class Game {
     bool m_isRunning;
     uint64_t m_previousFrameTime;
     std::unique_ptr<Registry> m_registry;
+    std::unique_ptr<AssetStore> m_assetStore;
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
 
