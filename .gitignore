@@ -35,3 +35,5 @@
 .vscode
 *.dSYM
 build
+.cache
+compile_commands.json

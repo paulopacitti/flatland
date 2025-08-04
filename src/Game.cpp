@@ -57,19 +57,19 @@ void Game::setup() {
   m_assetStore->addTexture(m_renderer, "tank-image",
                            "../assets/images/tank-panther-right.png");
   m_assetStore->addTexture(m_renderer, "truck-image",
-                           "../assets/truck-ford-right.png");
+                           "../assets/images/truck-ford-right.png");
 
   Entity tank = m_registry->createEntity();
   tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
-                                        glm::vec2(1.0, 1.0), 0.0);
-  tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 50.0));
-  tank.addComponent<SpriteComponent>("tank-image", 100, 100);
+                                        glm::vec2(3.0, 3.0), 45.0);
+  tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
+  tank.addComponent<SpriteComponent>("tank-image", 32, 32);
 
   Entity truck = m_registry->createEntity();
   truck.addComponent<TransformComponent>(glm::vec2(50.0, 100.0),
                                          glm::vec2(1.0, 1.0), 0.0);
   truck.addComponent<RigidBodyComponent>(glm::vec2(0.0, 50.0));
-  truck.addComponent<SpriteComponent>("truck-image", 100, 10);
+  truck.addComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
 void Game::run() {
@@ -126,7 +126,7 @@ void Game::render() {
   SDL_RenderClear(m_renderer);
 
   // draw backgrounds
-  m_registry->getSystem<RenderSystem>().update(m_renderer);
+  m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore);
   // render buffer
   SDL_RenderPresent(m_renderer);
 }

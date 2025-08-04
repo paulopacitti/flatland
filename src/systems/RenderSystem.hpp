@@ -1,6 +1,7 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
+#include "../AssetStore.hpp"
 #include "../Component.hpp"
 #include "../ECS.hpp"
 #include <SDL2/SDL.h>
@@ -12,17 +13,24 @@ class RenderSystem : public System {
       requireComponent<SpriteComponent>();
     }
 
-    void update(SDL_Renderer* renderer) {
+    void update(SDL_Renderer* renderer,
+                std::unique_ptr<AssetStore>& assetStore) {
       for (auto entity : getEntities()) {
         const auto transform = entity.getComponent<TransformComponent>();
         const auto sprite = entity.getComponent<SpriteComponent>();
 
-        // TODO: draw the textures of each sprite
-        SDL_Rect obj = {static_cast<int>(transform.position.x),
-                        static_cast<int>(transform.position.y), sprite.width,
-                        sprite.height};
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(renderer, &obj);
+        // Set the source rectangle of our original sprite texture
+        SDL_Rect srcRect = sprite.srcRect;
+        SDL_Rect dstRect = {
+            static_cast<int>(transform.position.x),
+            static_cast<int>(transform.position.y),
+            static_cast<int>(sprite.width * transform.scale.x),
+            static_cast<int>(sprite.height * transform.scale.y)};
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+        // Set the destination rectangle with the position to be rendered
+        SDL_RenderCopyEx(renderer, assetStore->getTexture(sprite.assetId),
+                         &srcRect, &dstRect, transform.rotation, NULL, flip);
       }
     }
 };
