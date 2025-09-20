@@ -10,8 +10,11 @@
 #include "systems/RenderSystem.hpp"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <cstdint>
+#include <fstream>
 #include <glm/glm.hpp>
 #include <memory>
+#include <string>
 
 Game::Game() {
   m_isRunning = false;
@@ -49,7 +52,7 @@ void Game::initialize() {
   m_isRunning = true;
 }
 
-void Game::setup() {
+void Game::loadLevel(uint8_t level) {
   m_registry->addSystem<MovementSystem>();
   m_registry->addSystem<RenderSystem>();
 
@@ -59,9 +62,12 @@ void Game::setup() {
   m_assetStore->addTexture(m_renderer, "truck-image",
                            "../assets/images/truck-ford-right.png");
 
+  loadTilemap("./assets/tilemaps/jungle.map", "../assets/tilemaps/jungle.png",
+              32, 1.5);
+
   Entity tank = m_registry->createEntity();
   tank.addComponent<TransformComponent>(glm::vec2(10.0, 30.0),
-                                        glm::vec2(3.0, 3.0), 45.0);
+                                        glm::vec2(1.0, 1.0), 45.0);
   tank.addComponent<RigidBodyComponent>(glm::vec2(50.0, 0.0));
   tank.addComponent<SpriteComponent>("tank-image", 32, 32);
 
@@ -72,6 +78,8 @@ void Game::setup() {
   truck.addComponent<SpriteComponent>("truck-image", 32, 32);
 }
 
+void Game::setup() { loadLevel(1); }
+
 void Game::run() {
   setup();
   while (m_isRunning) {
@@ -79,6 +87,52 @@ void Game::run() {
     update();
     render();
   }
+}
+
+void Game::loadTilemap(std::string mapFilePath, std::string spriteFilePath,
+                       uint32_t tileSize, float scale) {
+  std::fstream mapFile;
+  std::filesystem::path filePath(mapFilePath);
+  if (!std::filesystem::exists(filePath)) {
+    spdlog::error("Map file does not exist: {}", mapFilePath);
+    return;
+  }
+
+  m_assetStore->addTexture(m_renderer, "tilemap-image", spriteFilePath);
+  mapFile.open(mapFilePath);
+  if (!mapFile.is_open()) {
+    spdlog::error("Failed to open map file: {}", mapFilePath);
+    return;
+  }
+
+  std::string line;
+  int i = 0;
+  while (std::getline(mapFile, line, '\n')) {
+    int j = 0;
+    std::stringstream ss(line);
+    std::string tileIndexStr;
+
+    while (std::getline(ss, tileIndexStr, ',')) {
+      int tileIndex = std::stoi(tileIndexStr);
+
+      // Extract the two digits from the tileIndex
+      int srcRectY = (tileIndex / 10) * tileSize;
+      int srcRectX = (tileIndex % 10) * tileSize;
+
+      glm::vec2 vecPosition(j * tileSize * scale, i * tileSize * scale);
+      glm::vec2 vecScale(scale, scale);
+
+      Entity tile = m_registry->createEntity();
+      tile.addComponent<TransformComponent>(vecPosition, vecScale, 0);
+      tile.addComponent<SpriteComponent>("tilemap-image", tileSize, tileSize,
+                                         srcRectX, srcRectY);
+
+      j++;
+    }
+    i++;
+  }
+
+  mapFile.close();
 }
 
 void Game::processInput() {
@@ -126,7 +180,7 @@ void Game::render() {
   SDL_RenderClear(m_renderer);
 
   // draw backgrounds
-  m_registry->getSystem<RenderSystem>().update(m_renderer, m_assetStore);
+  m_registry->getSystem<RenderSystem>().update(m_renderer, *m_assetStore);
   // render buffer
   SDL_RenderPresent(m_renderer);
 }

@@ -13,8 +13,7 @@ class RenderSystem : public System {
       requireComponent<SpriteComponent>();
     }
 
-    void update(SDL_Renderer* renderer,
-                std::unique_ptr<AssetStore>& assetStore) {
+    void update(SDL_Renderer* renderer, AssetStore& assetStore) {
       for (auto entity : getEntities()) {
         const auto transform = entity.getComponent<TransformComponent>();
         const auto sprite = entity.getComponent<SpriteComponent>();
@@ -29,7 +28,7 @@ class RenderSystem : public System {
         SDL_RendererFlip flip = SDL_FLIP_NONE;
 
         // Set the destination rectangle with the position to be rendered
-        SDL_RenderCopyEx(renderer, assetStore->getTexture(sprite.assetId),
+        SDL_RenderCopyEx(renderer, assetStore.getTexture(sprite.assetId),
                          &srcRect, &dstRect, transform.rotation, NULL, flip);
       }
     }

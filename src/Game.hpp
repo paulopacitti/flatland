@@ -19,15 +19,18 @@ class Game {
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
 
+    void loadLevel(uint8_t level);
     void setup();
+    void loadTilemap(std::string mapFilePath, std::string mapSpriteFilePath,
+                     uint32_t tileSize, float scale);
 
     /**
      * Calculates the time elapsed since the last frame and enforces a
      * frame cap.
      *
      * This function calculates the delta time (in seconds) since the last
-     * frame, enforces a frame cap by delaying the execution if necessary, and
-     * updates the previous frame time.
+     * frame, enforces a frame cap by delaying the execution if necessary,
+     * and updates the previous frame time.
      *
      * Returns the delta time (in seconds) since the last frame.
      */
@@ -54,8 +57,8 @@ class Game {
      * Processes input events for the game.
      *
      * This function polls for SDL events and handles them accordingly. It
-     * checks for quit events and keydown events. If the quit event is detected
-     * or the escape key is pressed, the game will stop running.
+     * checks for quit events and keydown events. If the quit event is
+     * detected or the escape key is pressed, the game will stop running.
      */
     void processInput();
     void update();
